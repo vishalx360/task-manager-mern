@@ -1,5 +1,6 @@
 'use client';
 
+import KanbanBoard from '@/components/KanbanBoard';
 import { useAuth } from '@reactivers/use-auth';
 import { useRouter } from 'next/navigation';
 
@@ -10,9 +11,5 @@ export default function Home() {
     router.push('/login');
     return null;
   }
-  return (
-    <div>
-      <h1>Home Page</h1>
-    </div>
-  );
+  return <KanbanBoard />;
 }
