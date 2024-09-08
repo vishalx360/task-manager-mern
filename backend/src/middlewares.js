@@ -14,8 +14,16 @@ function errorHandler(err, req, res, next) {
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
   });
 }
+// isAuthenticated middleware
+const isAuthenticated = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  return next();
+};
 
 module.exports = {
   notFound,
   errorHandler,
+  isAuthenticated,
 };
