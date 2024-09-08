@@ -1,6 +1,10 @@
 import localFont from "next/font/local";
 import "./globals.css";
-
+import { FaTasks } from "react-icons/fa";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import LinkButton from "@/components/custom/LinkButton";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -23,6 +27,19 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <nav className="bg-blue-500 p-5 justify-between flex items-center">
+          <div>
+            <FaTasks className="text-white" size="30px" />
+          </div>
+          <div className="flex">
+            <LinkButton href={"/login"} variant={"default"}>
+              Login
+            </LinkButton>
+            <LinkButton href={"/signup"} variant={"secondary"}>
+              Signup
+            </LinkButton>
+          </div>
+        </nav>
         {children}
       </body>
     </html>
