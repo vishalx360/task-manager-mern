@@ -12,6 +12,7 @@ import { signinSchema } from '@/lib/validationSchema';
 import { useAuth } from '@reactivers/use-auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import LinkButton from '@/components/custom/LinkButton';
 
 // Define the Zod schema for validation
 
@@ -108,10 +109,14 @@ const Login = () => {
               Signup
             </Link>
           </p>
-          <button className="mt-4 w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100">
+          <LinkButton
+            variant={'outline'}
+            href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`}
+            className="mt-4 w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          >
             <FaGoogle className="mr-2" />
             Login with Google
-          </button>
+          </LinkButton>
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ exports.googleLogin = passport.authenticate('google', {
 exports.googleCallback = [
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('/dashboard');
+    res.redirect(process.env.FRONTEND_URL);
   },
 ];
 
