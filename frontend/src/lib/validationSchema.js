@@ -22,7 +22,4 @@ const signupSchema = z
     path: ['confirmPassword'],
   });
 
-module.exports = {
-  signinSchema,
-  signupSchema,
-};
+export { signinSchema, signupSchema };

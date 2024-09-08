@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
 const prisma = require('../db');
 
 // Configure Passport Local Strategy
@@ -12,14 +12,15 @@ passport.use(
     async (email, password, done) => {
       try {
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
+        if (!user || !user.password) {
           return done(null, false, { message: 'Incorrect email or password.' });
         }
-
-        const isMatch = await bcrypt.compare(password, user.password);
+        // Use Argon2 to verify the password
+        const isMatch = await argon2.verify(user.password, password);
         if (!isMatch) {
           return done(null, false, { message: 'Incorrect email or password.' });
         }
+
         return done(null, user);
       } catch (error) {
         return done(error);
@@ -67,7 +68,10 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });
-    done(null, user);
+    done(null, {
+      ...user,
+      password: undefined,
+    });
   } catch (error) {
     done(error);
   }

@@ -1,22 +1,66 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import React, { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
+import { useCallback } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signinSchema } from '@/lib/validationSchema';
+import { useAuth } from '@reactivers/use-auth';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+
+// Define the Zod schema for validation
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Initialize react-hook-form with the Zod resolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(signinSchema),
+  });
+  const router = useRouter();
+  const { login, isLoggedIn } = useAuth();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
-  };
+  const handelSignIn = useCallback(
+    async (data) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(data),
+          },
+        );
+        const result = await response.json();
+        if (!response.ok) {
+          toast.error(result.message || 'Login error');
+          return;
+        }
+        console.log('Login result:', result.user);
+        login(result.user);
+        toast.success(result.message || 'Login successful');
+      } catch (error) {
+        console.error('Login error:', error);
+        toast.error('Login error');
+      }
+    },
+    [toast],
+  );
+
+  if (isLoggedIn) {
+    router.push('/');
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -24,26 +68,34 @@ const Login = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">
           Login
         </h2>
-        <form className="space-y-4" onSubmit={handleLogin}>
+        <form className="space-y-4" onSubmit={handleSubmit(handelSignIn)}>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input type="email" id="email" placeholder="Email" />
+            <Input
+              type="email"
+              id="email"
+              placeholder="Email"
+              {...register('email')}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Password
-            </label>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="password">Password</Label>
             <Input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              required
+              {...register('password')}
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <Button type="submit" className="w-full font-bold">
             Login
@@ -51,7 +103,7 @@ const Login = () => {
         </form>
         <div className="text-center mt-4">
           <p className="text-gray-600">
-            Don't have an account?{" "}
+            Don't have an account?{' '}
             <Link href="/signup" className="text-blue-600 hover:underline">
               Signup
             </Link>

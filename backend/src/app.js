@@ -14,9 +14,16 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(helmet());
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// CORS
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
 
 // Cookie session configuration
 app.use(
