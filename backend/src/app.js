@@ -17,6 +17,10 @@ app.use(helmet());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Extract root domain using URL parser
+const frontendUrl = new URL(process.env.FRONTEND_URL);
+const rootDomain = frontendUrl.hostname.split('.').slice(-2).join('.');
+
 // CORS
 app.use(
   cors({
@@ -31,9 +35,13 @@ app.use(
     name: 'session',
     keys: ['secretKey1', 'secretKey2'],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    domain: process.env.FRONTEND_URL,
+    domain: rootDomain, // Use root domain dynamically
+    secure: process.env.NODE_ENV === 'production', // Ensure cookies are secure in production
+    httpOnly: true, // Prevent client-side JS from accessing the cookie
+    sameSite: 'lax', // Prevent CSRF by allowing cookies only in first-party contexts
   }),
 );
+
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
