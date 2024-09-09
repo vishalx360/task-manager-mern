@@ -23,9 +23,10 @@ const createTask = async (req, res) => {
 // Get all tasks for the authenticated user
 const getAllTasks = async (req, res) => {
   const userId = req.user.id;
-
   try {
-    const tasks = await prisma.task.findMany({ where: { userId } });
+    const tasks = await prisma.task.findMany({
+      where: { userId },
+    });
     res.status(200).json(tasks);
   } catch (error) {
     res.status(400).json({ error: 'Error retrieving tasks' });
@@ -60,14 +61,13 @@ const updateTask = async (req, res) => {
     if (!task || task.userId !== req.user.id) {
       return res.status(404).json({ error: 'Task not found' });
     }
-
     task = await prisma.task.update({
       where: { id },
       data: { title, description, status },
     });
-
     return res.status(200).json(task);
   } catch (error) {
+    console.error(error);
     return res.status(400).json({ error: 'Error updating task' });
   }
 };
