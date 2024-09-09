@@ -85,12 +85,25 @@ exports.googleLogin = passport.authenticate('google', {
 });
 
 // Handle Google OAuth callback
-exports.googleCallback = [
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    res.redirect(process.env.FRONTEND_URL);
-  },
-];
+// Handle Google OAuth callback
+exports.googleCallback = (req, res, next) => {
+  passport.authenticate('google', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging in with Google' });
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Google authentication failed' });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: 'Error logging in with Google' });
+      }
+      return res.redirect(process.env.FRONTEND_URL);
+    });
+  })(req, res, next);
+};
 
 // Handle user logout
 exports.logout = async (req, res) => {
