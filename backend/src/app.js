@@ -31,6 +31,7 @@ app.use(
     name: 'session',
     keys: ['secretKey1', 'secretKey2'],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    domain: process.env.FRONTEND_URL,
   }),
 );
 // Initialize Passport
