@@ -47,7 +47,7 @@ function Navbar() {
       console.error('Logout error:', error);
       toast.error('Logout error');
     }
-  }, [toast, logout]);
+  }, [logout]);
 
   return (
     <nav className="bg-blue-500 p-5 justify-between flex items-center">

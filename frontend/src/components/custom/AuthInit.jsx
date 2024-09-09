@@ -30,7 +30,7 @@ function AuthInit() {
     } catch (error) {
       console.error('Login error:', error);
     }
-  }, [login, logout]);
+  }, [router, login, logout]);
 
   useEffect(() => {
     handelGetCurrentUser();

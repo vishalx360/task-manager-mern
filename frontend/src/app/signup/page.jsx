@@ -50,7 +50,7 @@ const Signup = () => {
         toast.error('Signup error');
       }
     },
-    [toast],
+    [router],
   );
 
   if (isLoggedIn) {
